@@ -5,6 +5,24 @@ import { OrderBook } from './orderbook.js';
 import { generateTrader } from './traders.js';
 import { calculateScore } from './scoring.js';
 
+function avellanedaStoikov(midPrice, inventory, timeLeft, sigma) {
+    const gamma = CONFIG.AS_GAMMA;
+    const kappa = CONFIG.AS_KAPPA;
+
+    // Reservation price (inventory-adjusted mid)
+    const reservationPrice = midPrice - inventory * gamma * sigma * sigma * timeLeft;
+
+    // Optimal spread
+    const optimalSpread = (2 / gamma) * Math.log(1 + gamma / kappa)
+                        + gamma * sigma * sigma * timeLeft;
+
+    // Optimal quotes
+    const optimalBid = reservationPrice - optimalSpread / 2;
+    const optimalAsk = reservationPrice + optimalSpread / 2;
+
+    return { reservationPrice, optimalSpread, optimalBid, optimalAsk };
+}
+
 export class GameEngine {
     constructor(onTickCallback) {
         this.priceEngine = new PriceEngine();
@@ -42,11 +60,19 @@ export class GameEngine {
         // 5. Check inventory limits
         this.player.checkInventoryLimit();
 
+        // Avellaneda-Stoikov model quotes
+        const timeLeftTicks = this.maxTicks - this.tick;
+        const asModel = avellanedaStoikov(newPrice, this.player.inventory, timeLeftTicks, CONFIG.SIGMA);
+
         // 6. Compute current state snapshot for UI
         const snapshot = {
             tick: this.tick,
             price: newPrice,
             quotes: quotes,
+            optimalQuotes: {
+                bid: asModel.optimalBid,
+                ask: asModel.optimalAsk
+            },
             pnl: this.player.getPnL(newPrice),
             inventory: this.player.inventory,
             spread: this.player.halfSpread * 2,

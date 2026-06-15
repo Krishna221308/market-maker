@@ -43,6 +43,24 @@ function initChart() {
                     borderDash: [5, 5],
                     pointRadius: 0,
                 },
+                {
+                    label: 'A-S Optimal Bid',
+                    data: [],
+                    borderColor: 'rgba(16,185,129,0.3)',
+                    borderWidth: 1,
+                    borderDash: [2, 4],
+                    pointRadius: 0,
+                    hidden: true
+                },
+                {
+                    label: 'A-S Optimal Ask',
+                    data: [],
+                    borderColor: 'rgba(239,68,68,0.3)',
+                    borderWidth: 1,
+                    borderDash: [2, 4],
+                    pointRadius: 0,
+                    hidden: true
+                }
             ],
         },
         options: {
@@ -70,12 +88,16 @@ function updateChart(snapshot) {
     data.datasets[0].data.push(snapshot.price);
     data.datasets[1].data.push(snapshot.quotes.bid);
     data.datasets[2].data.push(snapshot.quotes.ask);
+    data.datasets[3].data.push(snapshot.optimalQuotes.bid);
+    data.datasets[4].data.push(snapshot.optimalQuotes.ask);
 
     if (data.labels.length > CONFIG.CHART_MAX_POINTS) {
         data.labels.shift();
         data.datasets[0].data.shift();
         data.datasets[1].data.shift();
         data.datasets[2].data.shift();
+        data.datasets[3].data.shift();
+        data.datasets[4].data.shift();
     }
 
     priceChart.update('none');
@@ -180,6 +202,13 @@ function setupControls() {
         }
     });
 
+    document.getElementById('toggle-as-model').addEventListener('change', (e) => {
+        const show = e.target.checked;
+        priceChart.data.datasets[3].hidden = !show;
+        priceChart.data.datasets[4].hidden = !show;
+        priceChart.update('none');
+    });
+
     document.getElementById('btn-start').addEventListener('click', () => {
         document.getElementById('start-screen').style.display = 'none';
         engine.start();
@@ -212,12 +241,62 @@ function updateControlsDisplay() {
     }
 }
 
+function saveAndGetScores(snapshot) {
+    const scores = JSON.parse(localStorage.getItem('mm-scores') || '[]');
+    const newEntry = {
+        score: snapshot.finalScore.finalScore,
+        date: new Date().toISOString(),
+        trades: snapshot.finalScore.totalTrades,
+        id: Date.now()
+    };
+    scores.push(newEntry);
+    scores.sort((a, b) => b.score - a.score);
+    scores.splice(10); // keep top 10
+    localStorage.setItem('mm-scores', JSON.stringify(scores));
+    return { scores, isNewBest: scores.length > 0 && scores[0].id === newEntry.id, currentId: newEntry.id };
+}
+
 function showGameOver(snapshot) {
     document.getElementById('game-over-overlay').style.display = 'flex';
     document.getElementById('go-raw-pnl').textContent = formatMoney(snapshot.finalScore.rawPnL);
     document.getElementById('go-penalty').textContent = formatMoney(snapshot.finalScore.inventoryPenalty);
     document.getElementById('go-score').textContent = formatMoney(snapshot.finalScore.finalScore);
     document.getElementById('go-trades').textContent = snapshot.finalScore.totalTrades;
+
+    const { scores, isNewBest, currentId } = saveAndGetScores(snapshot);
+    const leaderboardHtml = `
+        <h3 style="margin-top: 20px; text-align: center;">Your Top Scores</h3>
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9em; margin-bottom: 20px;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--bg-secondary);">
+                    <th style="padding-bottom: 4px;">Rank</th>
+                    <th style="padding-bottom: 4px;">Score</th>
+                    <th style="padding-bottom: 4px;">Trades</th>
+                    <th style="padding-bottom: 4px;">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${scores.map((s, i) => `
+                    <tr style="${s.id === currentId ? 'background: rgba(59, 130, 246, 0.2); font-weight: bold;' : ''}">
+                        <td style="padding: 4px 0;">#${i + 1}</td>
+                        <td style="padding: 4px 0; color: ${s.score >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">${formatMoney(s.score)}</td>
+                        <td style="padding: 4px 0;">${s.trades}</td>
+                        <td style="padding: 4px 0;">${new Date(s.date).toLocaleDateString()}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        ${isNewBest ? '<div style="color: var(--accent-green); font-weight: bold; margin-bottom: 10px; text-align: center;">🏆 New Personal Best!</div>' : ''}
+    `;
+    
+    let lbContainer = document.getElementById('leaderboard-container');
+    if (!lbContainer) {
+        lbContainer = document.createElement('div');
+        lbContainer.id = 'leaderboard-container';
+        const btn = document.getElementById('btn-restart');
+        btn.parentNode.insertBefore(lbContainer, btn);
+    }
+    lbContainer.innerHTML = leaderboardHtml;
 }
 
 // Initial Setup
@@ -265,6 +344,9 @@ function populateDOM() {
             <div style="font-family: 'JetBrains Mono', monospace;">Skew: $<span id="skew-value">0.00</span></div>
             <button id="btn-skew-up">↑ Skew (E)</button>
         </div>
+        <label style="display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.9em; margin-top: 8px;">
+            <input type="checkbox" id="toggle-as-model"> Show A-S Optimal Quotes
+        </label>
         <button id="toggle-quotes" class="active">PULL QUOTES (Space)</button>
     `;
 
