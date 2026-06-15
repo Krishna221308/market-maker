@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Maker Madness</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Application Scripts -->
+    <script type="module" src="js/config.js"></script>
+    <script type="module" src="js/price.js"></script>
+    <script type="module" src="js/orderbook.js"></script>
+    <script type="module" src="js/traders.js"></script>
+    <script type="module" src="js/player.js"></script>
+    <script type="module" src="js/scoring.js"></script>
+    <script type="module" src="js/ui.js"></script>
+    <script type="module" src="js/engine.js"></script>
+</head>
+<body>
+    <!-- Start Screen -->
+    <div id="start-screen"></div>
+    
+    <!-- Game Header -->
+    <div id="game-header"></div>
+    
+    <!-- Main Game UI -->
+    <main>
+        <!-- Chart -->
+        <div id="price-chart-container">
+            <canvas id="price-chart"></canvas>
+        </div>
+        
+        <!-- Controls -->
+        <div id="controls-panel"></div>
+        
+        <!-- Order Flow -->
+        <div id="orderflow-feed"></div>
+        
+        <!-- Stats -->
+        <div id="stats-panel"></div>
+        
+        <!-- Risk Display -->
+        <div id="risk-panel"></div>
+    </main>
+    
+    <!-- Game Over Screen -->
+    <div id="game-over-overlay" style="display: none;"></div>
+</body>
+</html>
