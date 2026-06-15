@@ -1,0 +1,216 @@
+:root {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111827;
+  --bg-card: #1a1f2e;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --accent-blue: #3b82f6;
+  --accent-yellow: #f59e0b;
+  --glow-green: 0 0 20px rgba(16, 185, 129, 0.3);
+  --glow-red: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 60% 40%;
+  grid-template-rows: auto 1fr auto;
+  gap: 16px;
+  padding: 16px;
+  height: calc(100vh - 80px); /* Leave room for header */
+  box-sizing: border-box;
+}
+
+#game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--bg-secondary);
+}
+
+#game-header h2 {
+  margin: 0;
+  color: var(--accent-blue);
+}
+
+#price-chart-container {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 16px;
+  position: relative;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+#controls-panel {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+#orderflow-feed {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 16px;
+  height: 250px;
+  overflow-y: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+}
+
+#stats-panel {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1em;
+}
+
+/* Specific elements */
+.positive { color: var(--accent-green); }
+.negative { color: var(--accent-red); }
+.warning { color: var(--accent-yellow); }
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-secondary);
+  padding: 12px;
+  border-radius: 6px;
+}
+
+button {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.1s;
+  font-weight: bold;
+}
+
+button:hover {
+  background: var(--bg-secondary);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+#toggle-quotes {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: auto;
+}
+#toggle-quotes.active {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+#toggle-quotes.inactive {
+  background: var(--bg-secondary);
+  border-color: var(--text-secondary);
+  color: var(--text-secondary);
+}
+
+.overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.overlay-content {
+  background: var(--bg-card);
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 500px;
+  border: 1px solid var(--bg-secondary);
+  box-shadow: var(--glow-blue);
+}
+
+.overlay h1 {
+  margin-top: 0;
+  color: var(--accent-blue);
+  font-size: 2.5em;
+}
+
+.primary-btn {
+  background: var(--accent-blue);
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  font-size: 1.2em;
+  border-radius: 6px;
+  margin-top: 20px;
+  font-weight: bold;
+}
+.primary-btn:hover {
+  background: #2563eb;
+}
+
+/* Inventory Gauge */
+.gauge-container {
+  width: 100%;
+  height: 24px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  margin-top: 16px;
+}
+
+.gauge-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  background: var(--accent-green);
+  transition: all 0.2s ease-out;
+}
+
+.gauge-center {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 50%;
+  width: 2px;
+  background: var(--text-primary);
+  transform: translateX(-50%);
+  z-index: 10;
+}
