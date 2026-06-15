@@ -10,6 +10,7 @@
   --accent-yellow: #f59e0b;
   --glow-green: 0 0 20px rgba(16, 185, 129, 0.3);
   --glow-red: 0 0 20px rgba(239, 68, 68, 0.3);
+  --glow-blue: 0 0 20px rgba(59, 130, 246, 0.3);
 }
 
 body {
@@ -213,4 +214,106 @@ button:active {
   background: var(--text-primary);
   transform: translateX(-50%);
   z-index: 10;
+}
+
+/* Risk Panel - Hidden (content integrated into stats panel) */
+#risk-panel {
+  display: none;
+}
+
+/* Price Display in Header */
+#price-display {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.3em;
+  padding: 4px 12px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+/* === Micro-Animations === */
+@keyframes pnlFlashGreen {
+  0% { text-shadow: 0 0 12px rgba(16, 185, 129, 0.9); }
+  100% { text-shadow: none; }
+}
+
+@keyframes pnlFlashRed {
+  0% { text-shadow: 0 0 12px rgba(239, 68, 68, 0.9); }
+  100% { text-shadow: none; }
+}
+
+@keyframes priceFlashUp {
+  0% { background-color: rgba(16, 185, 129, 0.3); }
+  100% { background-color: transparent; }
+}
+
+@keyframes priceFlashDown {
+  0% { background-color: rgba(239, 68, 68, 0.3); }
+  100% { background-color: transparent; }
+}
+
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.05); }
+}
+
+@keyframes fillFlash {
+  0% { background-color: rgba(16, 185, 129, 0.2); }
+  100% { background-color: transparent; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+@keyframes inventoryGlow {
+  0%, 100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); }
+}
+
+.pnl-flash-positive {
+  animation: pnlFlashGreen 0.5s ease-out;
+}
+
+.pnl-flash-negative {
+  animation: pnlFlashRed 0.5s ease-out;
+}
+
+.price-up {
+  animation: priceFlashUp 0.4s ease-out;
+}
+
+.price-down {
+  animation: priceFlashDown 0.4s ease-out;
+}
+
+.timer-urgent {
+  color: var(--accent-red) !important;
+  animation: timerPulse 1s infinite;
+}
+
+.fill-flash {
+  animation: fillFlash 0.5s ease-out;
+}
+
+.spread-warning {
+  animation: shake 0.3s ease-out;
+}
+
+.inventory-warning {
+  animation: inventoryGlow 1s infinite;
+}
+
+/* Achievement Badges */
+.achievement-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  margin: 4px;
+  border-radius: 16px;
+  font-size: 0.85em;
+  font-weight: 600;
+  background: var(--bg-secondary);
+  border: 1px solid var(--accent-yellow);
+  color: var(--accent-yellow);
 }

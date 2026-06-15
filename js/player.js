@@ -12,6 +12,8 @@ export class Player {
         this.skew = 0.0;                            // asymmetric shift (+ = bid closer to mid)
         this.isQuoting = true;                      // whether quotes are live
         this.trades = [];                           // log of all fills
+        this.everPulledQuotes = false;               // track if quotes were ever pulled
+        this.spreadSnapshots = [];                   // track spread over time for achievements
     }
 
     getQuotes(midPrice) {
@@ -67,6 +69,13 @@ export class Player {
 
     toggleQuotes() {
         this.isQuoting = !this.isQuoting;
+        if (!this.isQuoting) {
+            this.everPulledQuotes = true;
+        }
+    }
+
+    recordSpread(halfSpread) {
+        this.spreadSnapshots.push(halfSpread * 2);
     }
 
     checkInventoryLimit() {

@@ -60,6 +60,9 @@ export class GameEngine {
         // 5. Check inventory limits
         this.player.checkInventoryLimit();
 
+        // Record spread for achievement tracking
+        this.player.recordSpread(this.player.halfSpread);
+
         // Avellaneda-Stoikov model quotes
         const timeLeftTicks = this.maxTicks - this.tick;
         const asModel = avellanedaStoikov(newPrice, this.player.inventory, timeLeftTicks, CONFIG.SIGMA);
@@ -94,6 +97,31 @@ export class GameEngine {
         }
 
         return snapshot;
+    }
+
+    getInitialSnapshot() {
+        const currentPrice = this.priceEngine.getPrice();
+        const quotes = this.player.getQuotes(currentPrice);
+        const timeLeftTicks = this.maxTicks - this.tick;
+        const asModel = avellanedaStoikov(currentPrice, this.player.inventory, timeLeftTicks, CONFIG.SIGMA);
+
+        return {
+            tick: this.tick,
+            price: currentPrice,
+            quotes: quotes,
+            optimalQuotes: {
+                bid: asModel.optimalBid,
+                ask: asModel.optimalAsk
+            },
+            pnl: this.player.getPnL(currentPrice),
+            inventory: this.player.inventory,
+            spread: this.player.halfSpread * 2,
+            skew: this.player.skew,
+            isQuoting: this.player.isQuoting,
+            trader: null,
+            fill: null,
+            timeLeft: (this.maxTicks - this.tick) * CONFIG.TICK_INTERVAL_MS / 1000,
+        };
     }
 
     start() {

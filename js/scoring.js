@@ -42,8 +42,12 @@ export function calculateScore(player, finalPrice) {
     // Achievements
     const achievements = [];
     if (player.inventory === 0) achievements.push("Flat Finish");
+    if (!player.everPulledQuotes) achievements.push("Iron Hands");
     if (player.trades.length >= 50) achievements.push("Scalper");
-    // Other achievements omitted for MVP
+    if (player.spreadSnapshots.length > 0) {
+        const avgSpread = mean(player.spreadSnapshots);
+        if (avgSpread < 0.30) achievements.push("Tight Ship");
+    }
 
     return {
         rawPnL: round2(rawPnL),
